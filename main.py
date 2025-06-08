@@ -6,7 +6,6 @@ import math as m
 import scipy as sp
 import pandas as p
 
-
 radii = [50, 250, 450, 650, 850, 1050, 1250]
 #find the area of each ring
 #maximise area taken up by nodes within each ring?
@@ -20,9 +19,8 @@ class Node:
 
     def residential(self):
         node_max_occupancy = [50, 100, 250, 1000]
-        probability = [0.5, 0.3, 0.15, 0.05]
         self.occupancy = rand.randrange(4,1000)
-        self.capacity = rand.choices(node_max_occupancy, probability) #smaller houses are cheaper so are more weighted,
+        self.capacity = rand.choices(node_max_occupancy, [0.5, 0.3, 0.15, 0.05])[0] #smaller houses are cheaper so are more weighted,
         self.node_size = m.floor((int(self.capacity)*(25/m.pi))**0.5)
         
     def hospital(self):
@@ -32,7 +30,7 @@ class Node:
 n1 = Node()
 n1.residential()
 
-dome_count = 500
+dome_count = 1000
 domes = []
 
 #home generator
