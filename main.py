@@ -9,10 +9,10 @@ radii = [50, 250, 450, 650, 850, 1050, 1250]
 #find the area of each ring
 #maximise area taken up by nodes within each ring?
 
-for a in range(len(radii)):
-    Ring = plt.Circle(( 0 , 0 ), radii[0])
+#for a in range(len(radii)):
+ #   Ring = plt.Circle(( 0 , 0 ), radii[0]
 
-# --- TOWER GENERATION ---
+# --- TOWER GENERATION --- heereee we are 
 tower_width = 5
 tower_height = 100
 
@@ -20,6 +20,8 @@ for radius in radii:
     for angle in [0, m.pi/2, m.pi, 3*m.pi/2]:  # E, N, W, S
         x = radius * m.cos(angle)
         z = radius * m.sin(angle)
+        if x >= sum(radii):
+            break
 
         tower = box(
             pos=vector(x, tower_height / 2, z),  # height/2 so base is on ground
@@ -33,15 +35,22 @@ class Node:
         pass
 
     def residential(self):
-        node_max_occupancy = [rand.randint(10, 50), rand.randint(60, 170), rand.randint(200, 500), rand.randint(900, 2000)]
+        node_max_occupancy = [rand.randint(10, 50), rand.randint(60, 170), rand.randint(200, 500), rand.randint(750, 1000)]
         self.occupancy = rand.randrange(4,1000)
         self.capacity = rand.choices(node_max_occupancy, [0.5, 0.3, 0.15, 0.05])[0] #smaller houses are cheaper so are more weighted,
         self.node_size = m.floor((int(self.capacity)*(25/m.pi))**0.5)
+        self.type = 'residential'
         
     def hospital(self):
         self.node_size = m.floor((75*25/m.pi)**0.5) #hospital size is fixed
         self.working_radius = 50 #placeholder value
         self.treatment_capacity = 50 #placeholder value
+        self.type = 'hospital'
+
+    def school(self):
+        self.node_size = m.floor((50 * 25 / m.pi) ** 0.5)
+        self.capacity = 200
+        self.type = 'school'
     
 n1 = Node()
 n1.residential()
