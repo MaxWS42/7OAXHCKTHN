@@ -3,8 +3,8 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 import math as m
-import scipy as sp
-import pandas as p
+import vpython as vp
+from vpython import *
 
 radii = [50, 250, 450, 650, 850, 1050, 1250]
 #find the area of each ring
@@ -24,13 +24,14 @@ class Node:
         self.node_size = m.floor((int(self.capacity)*(25/m.pi))**0.5)
         
     def hospital(self):
+        self.node_size = m.floor((75*25/m.pi)**0.5) #hospital size is fixed
         self.working_radius = 50 #placeholder value
         self.treatment_capacity = 50 #placeholder value
     
 n1 = Node()
 n1.residential()
 
-dome_count = 1000
+dome_count = 500
 domes = []
 
 #home generator
@@ -42,45 +43,42 @@ for i in range(dome_count):
 ###new bit from chatgpt###
 
 # --- placement parameters ---
-placed = []                      # list of (x, y, r) for already‐placed nodes
+placed = []                      # list of (x, z, r) for already‐placed nodes
 MAX_TRIES = 1000                 # give up after this many attempts per dome
 
 #sort domes largest‐first for greedy packing
 domes_sorted = sorted(domes, key=lambda d: d.node_size, reverse=True) 
 
-# --- place each dome in the first ring where it fits (greedy) ---
+#place each dome in the first ring where it fits (greedy) ---
 for dome in domes_sorted:                                                
     r_new = dome.node_size
 
-    # **CHANGED**: try rings in ascending order until placement succeeds
+    #try rings in ascending order until placement succeeds
     for ring_idx in range(len(radii) - 1):                                
         R1, R2 = radii[ring_idx], radii[ring_idx + 1]                    
 
         for attempt in range(MAX_TRIES):                                  
             θ = rand.random() * 2 * m.pi
             ρ = rand.uniform(R1 + r_new, R2 - r_new)
-            x, y = ρ * m.cos(θ), ρ * m.sin(θ)
+            x, z = ρ * m.cos(θ), ρ * m.sin(θ)
 
             # reject if overlapping any existing node
-            if all(m.hypot(x - xi, y - yi) >= (r_new + ri) 
-                   for xi, yi, ri in placed):                            
-                dome.x, dome.y = x, y                                     
-                placed.append((x, y, r_new))                             
+            if all(m.hypot(x - xi, z - zi) >= (r_new + ri) 
+                   for xi, zi, ri in placed):                            
+                dome.x, dome.z = x, z                                     
+                placed.append((x, z, r_new))                             
                 break                                                  
 
         # if we placed successfully, stop trying further rings
         if hasattr(dome, 'x'):                                           
             break                                                       
 
-# --- finally, plot rings and nodes (unchanged) ---
-fig, ax = plt.subplots()
-for R in radii:
-    ax.add_patch(plt.Circle((0, 0), R, fill=False, linestyle='--'))
+#3d stuff
+#ground = box(pos=vector(0,-2.5,0), size=vector(2000,0.2,2000), color=color.red) 
+ground = cylinder(pos=vector(0,-2.5,0), radius=(radii[-1]+100), up=vector(1,0,0), color=color.red)
 
-for x, y, r in placed:
-    ax.add_patch(plt.Circle((x, y), r, alpha=0.5))
+for i in range(len(placed)):
+    dome = sphere(pos=vector(placed[i][0], 0,placed[i][1]), radius=placed[i][2], color=color.cyan)
 
-ax.set_aspect('equal')
-ax.set_xlim(-radii[-1], radii[-1])
-ax.set_ylim(-radii[-1], radii[-1])
-plt.show()
+while True:
+    rate(30)
