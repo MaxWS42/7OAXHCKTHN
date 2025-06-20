@@ -2,6 +2,47 @@ import random as rand
 import math as m
 from vpython import *
 
+
+from time import sleep
+
+# Welcome screen
+intro_label = label(
+    pos=vector(0, 0, 0),
+    text="Welcome to Slow Cities!",
+    height=20,
+    box=True,
+    color=color.white,
+    background=color.gray(0.2),
+    border=10,
+    line=True,
+    opacity=0.9,
+)
+
+# Pause to show welcome screen
+sleep(5)
+
+# Hide intro label after delay
+intro_label.visible = False
+
+intro_label = label(
+    pos=vector(0, 0, 0),
+    text="Please enjoy this zero-player game, and play around with the label toggle.",
+    height=15,
+    box=True,
+    color=color.white,
+    background=color.gray(0.2),
+    border=10,
+    line=True,
+    opacity=0.9,
+)
+
+# Pause to show welcome screen
+sleep(3)
+
+# Hide intro label after delay
+intro_label.visible = False
+
+
 target_position = vector(0, 0, 0)
 scene.autoscale = False
 scene.userzoom = False
@@ -158,11 +199,11 @@ sky = sphere(
 )
 
 placed = []
-MAX_TRIES = 1000
+MAX_TRIES = 5000
 domes_sorted = sorted(domes, key=lambda d: d.node_size, reverse=True)
 
 # 🔄 Progress Label at floor level
-progress_label = label(pos=vector(0, 10, 0), text="0% domes placed", box=False, height=10, color=color.white)
+progress_label = label(pos=vector(0, 10, 0), text="0% buildings positioned.", box=False, height=10, color=color.white)
 
 def generate_domes():
     total = len(domes_sorted)
@@ -185,7 +226,7 @@ def generate_domes():
 
         # 🔄 Update progress
         percent = (i + 1) / total * 100
-        progress_label.text = f"{int(percent)}% domes calculated"
+        progress_label.text = f"{int(percent)}% buildings positioned"
         rate(60)
 
     # Connect domes
@@ -206,7 +247,7 @@ def generate_domes():
             start = vector(source.x, 0, source.z)
             end = vector(closest.x, 0, closest.z)
             axis = end - start
-            cylinder(pos=start, axis=axis, radius=3, color=color.white, opacity=0.5, shininess=0.7)
+            cylinder(pos=start, axis=axis, radius=3.5, color=color.white, opacity=0.5, shininess=0.7, emissive=True)
 
 generate_domes()
 
@@ -232,9 +273,9 @@ for dome in domes_sorted:
         continue
     radius = dome.node_size
     if dome.type == 'hospital':
-        cylinder(pos=vector(dome.x, 0, dome.z), radius=radius, axis=vector(0, 1, 0), color=color.red, length=80)
+        cylinder(pos=vector(dome.x, 0, dome.z), radius=radius*0.75, axis=vector(0, 1, 0), color=color.red, length=80)
     elif dome.type == 'school':
-        box(pos=vector(dome.x, 50, dome.z), size=vector(radius, 100, radius), color=vector(1.0, 0.84, 0.0))
+        box(pos=vector(dome.x, 40, dome.z), size=vector(radius*1.25, 80, radius*1.25), color=vector(1.0, 0.84, 0.0))
     else:
         color_val = vector(0.8, 0.8, 0.8)
         create_icosahedron(
